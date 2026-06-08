@@ -1,0 +1,1208 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: LubisiaTech Solutions API
+servers:
+  - url: /api
+tags:
+  - name: health
+  - name: services
+  - name: products
+  - name: orders
+  - name: inquiries
+  - name: stats
+  - name: blog
+  - name: settings
+  - name: affiliate
+  - name: auth
+  - name: newsletter
+  - name: websiteTemplates
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ── Auth ──────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+  # ── Newsletter ────────────────────────────────────────────────────────────
+  /newsletter/subscribe:
+    post:
+      operationId: subscribeNewsletter
+      tags: [newsletter]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsletterSubscribeInput"
+      responses:
+        "201":
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsletterSubscriber"
+        "400":
+          description: Bad request
+
+  /newsletter/subscribers:
+    get:
+      operationId: listNewsletterSubscribers
+      tags: [newsletter]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsletterSubscriber"
+
+  # ── Services ──────────────────────────────────────────────────────────────
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      operationId: createService
+      tags: [services]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  /services/{id}:
+    get:
+      operationId: getService
+      tags: [services]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateService
+      tags: [services]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+    delete:
+      operationId: deleteService
+      tags: [services]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Products ──────────────────────────────────────────────────────────────
+  /products/featured:
+    get:
+      operationId: getFeaturedProducts
+      tags: [products]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      parameters:
+        - {name: category, in: query, required: false, schema: {type: string}}
+        - {name: inStock, in: query, required: false, schema: {type: boolean}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateProduct
+      tags: [products]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Orders ────────────────────────────────────────────────────────────────
+  /orders/track:
+    get:
+      operationId: trackOrder
+      tags: [orders]
+      summary: Track an order by ID and email
+      parameters:
+        - {name: orderId, in: query, required: true, schema: {type: integer}}
+        - {name: email, in: query, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      parameters:
+        - {name: status, in: query, required: false, schema: {type: string}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateOrder
+      tags: [orders]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  # ── Inquiries ─────────────────────────────────────────────────────────────
+  /inquiries:
+    get:
+      operationId: listInquiries
+      tags: [inquiries]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Inquiry"
+    post:
+      operationId: createInquiry
+      tags: [inquiries]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InquiryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Inquiry"
+
+  /inquiries/{id}:
+    patch:
+      operationId: updateInquiry
+      tags: [inquiries]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InquiryUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Inquiry"
+
+  # ── Stats ─────────────────────────────────────────────────────────────────
+  /stats/summary:
+    get:
+      operationId: getSummaryStats
+      tags: [stats]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryStats"
+
+  # ── Blog ──────────────────────────────────────────────────────────────────
+  /blog:
+    get:
+      operationId: listBlogPosts
+      tags: [blog]
+      parameters:
+        - {name: published, in: query, required: false, schema: {type: boolean}}
+        - {name: category, in: query, required: false, schema: {type: string}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+    post:
+      operationId: createBlogPost
+      tags: [blog]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+
+  /blog/{slug}:
+    get:
+      operationId: getBlogPost
+      tags: [blog]
+      parameters:
+        - {name: slug, in: path, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBlogPost
+      tags: [blog]
+      parameters:
+        - {name: slug, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+    delete:
+      operationId: deleteBlogPost
+      tags: [blog]
+      parameters:
+        - {name: slug, in: path, required: true, schema: {type: string}}
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Site Settings ─────────────────────────────────────────────────────────
+  /settings:
+    get:
+      operationId: listSettings
+      tags: [settings]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SiteSetting"
+
+  /settings/{key}:
+    get:
+      operationId: getSetting
+      tags: [settings]
+      parameters:
+        - {name: key, in: path, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSetting"
+        "404":
+          description: Not found
+    put:
+      operationId: upsertSetting
+      tags: [settings]
+      parameters:
+        - {name: key, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteSettingInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSetting"
+
+  # ── Affiliate Programs ────────────────────────────────────────────────────
+  /affiliate/programs:
+    get:
+      operationId: listAffiliatePrograms
+      tags: [affiliate]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AffiliateProgram"
+    post:
+      operationId: createAffiliateProgram
+      tags: [affiliate]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AffiliateProgramInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffiliateProgram"
+
+  /affiliate/programs/{id}:
+    patch:
+      operationId: updateAffiliateProgram
+      tags: [affiliate]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AffiliateProgramUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffiliateProgram"
+    delete:
+      operationId: deleteAffiliateProgram
+      tags: [affiliate]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Affiliate Links ───────────────────────────────────────────────────────
+  /affiliate/links:
+    get:
+      operationId: listAffiliateLinks
+      tags: [affiliate]
+      parameters:
+        - {name: programId, in: query, required: false, schema: {type: integer}}
+        - {name: category, in: query, required: false, schema: {type: string}}
+        - {name: featured, in: query, required: false, schema: {type: boolean}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AffiliateLink"
+    post:
+      operationId: createAffiliateLink
+      tags: [affiliate]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AffiliateLinkInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffiliateLink"
+
+  /affiliate/links/{id}:
+    patch:
+      operationId: updateAffiliateLink
+      tags: [affiliate]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AffiliateLinkUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffiliateLink"
+    delete:
+      operationId: deleteAffiliateLink
+      tags: [affiliate]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "204":
+          description: Deleted
+
+  /affiliate/links/{id}/click:
+    post:
+      operationId: trackAffiliateLinkClick
+      tags: [affiliate]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClickTrackResponse"
+        "404":
+          description: Not found
+
+  # ── Website Templates ────────────────────────────────────────────────────
+  /website-templates:
+    get:
+      operationId: listWebsiteTemplates
+      tags: [websiteTemplates]
+      parameters:
+        - {name: category, in: query, required: false, schema: {type: string}}
+        - {name: featured, in: query, required: false, schema: {type: boolean}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebsiteTemplate"
+    post:
+      operationId: createWebsiteTemplate
+      tags: [websiteTemplates]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebsiteTemplateInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebsiteTemplate"
+
+  /website-templates/{id}:
+    get:
+      operationId: getWebsiteTemplate
+      tags: [websiteTemplates]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebsiteTemplate"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateWebsiteTemplate
+      tags: [websiteTemplates]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebsiteTemplateUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebsiteTemplate"
+    delete:
+      operationId: deleteWebsiteTemplate
+      tags: [websiteTemplates]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "204":
+          description: Deleted
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string}
+
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: {type: string}
+        email: {type: string}
+        password: {type: string}
+        newsletterSubscribed: {type: boolean}
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: {type: string}
+        password: {type: string}
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token: {type: string}
+        user:
+          $ref: "#/components/schemas/UserProfile"
+
+    UserProfile:
+      type: object
+      required: [id, name, email, role, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        email: {type: string}
+        role: {type: string}
+        newsletterSubscribed: {type: boolean}
+        createdAt: {type: string}
+
+    NewsletterSubscribeInput:
+      type: object
+      required: [email]
+      properties:
+        email: {type: string}
+        name: {type: ["string", "null"]}
+
+    NewsletterSubscriber:
+      type: object
+      required: [id, email, subscribedAt]
+      properties:
+        id: {type: integer}
+        email: {type: string}
+        name: {type: ["string", "null"]}
+        subscribedAt: {type: string}
+
+    Service:
+      type: object
+      required: [id, name, description, category, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+        createdAt: {type: string}
+
+    ServiceInput:
+      type: object
+      required: [name, description, category]
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+
+    ServiceUpdate:
+      type: object
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+
+    Product:
+      type: object
+      required: [id, name, description, category, price, stock, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        stock: {type: integer}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+        createdAt: {type: string}
+
+    ProductInput:
+      type: object
+      required: [name, description, category, price, stock]
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        stock: {type: integer}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+
+    ProductUpdate:
+      type: object
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        stock: {type: integer}
+        imageUrl: {type: ["string", "null"]}
+        featured: {type: boolean}
+
+    OrderItem:
+      type: object
+      required: [productId, quantity, unitPrice]
+      properties:
+        productId: {type: integer}
+        quantity: {type: integer}
+        unitPrice: {type: number}
+
+    Order:
+      type: object
+      required: [id, customerName, customerEmail, totalAmount, status, createdAt]
+      properties:
+        id: {type: integer}
+        customerName: {type: string}
+        customerEmail: {type: string}
+        customerPhone: {type: ["string", "null"]}
+        totalAmount: {type: number}
+        status: {type: string}
+        notes: {type: ["string", "null"]}
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        createdAt: {type: string}
+
+    OrderInput:
+      type: object
+      required: [customerName, customerEmail, items]
+      properties:
+        customerName: {type: string}
+        customerEmail: {type: string}
+        customerPhone: {type: ["string", "null"]}
+        notes: {type: ["string", "null"]}
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    OrderUpdate:
+      type: object
+      properties:
+        status: {type: string}
+        notes: {type: ["string", "null"]}
+
+    Inquiry:
+      type: object
+      required: [id, name, email, subject, message, status, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        email: {type: string}
+        phone: {type: ["string", "null"]}
+        subject: {type: string}
+        message: {type: string}
+        serviceInterest: {type: ["string", "null"]}
+        status: {type: string}
+        createdAt: {type: string}
+
+    InquiryInput:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name: {type: string}
+        email: {type: string}
+        phone: {type: ["string", "null"]}
+        subject: {type: string}
+        message: {type: string}
+        serviceInterest: {type: ["string", "null"]}
+
+    InquiryUpdate:
+      type: object
+      properties:
+        status: {type: string}
+
+    SummaryStats:
+      type: object
+      required: [totalProducts, totalOrders, totalInquiries, totalServices, recentOrders, recentInquiries]
+      properties:
+        totalProducts: {type: integer}
+        totalOrders: {type: integer}
+        totalInquiries: {type: integer}
+        totalServices: {type: integer}
+        totalRevenue: {type: number}
+        totalAffiliateClicks: {type: integer}
+        totalBlogPosts: {type: integer}
+        totalUsers: {type: integer}
+        totalNewsletterSubscribers: {type: integer}
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+        recentInquiries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Inquiry"
+
+    BlogPost:
+      type: object
+      required: [id, title, slug, content, excerpt, published, category, createdAt, updatedAt]
+      properties:
+        id: {type: integer}
+        title: {type: string}
+        slug: {type: string}
+        content: {type: string}
+        excerpt: {type: string}
+        coverImageUrl: {type: ["string", "null"]}
+        published: {type: boolean}
+        category: {type: string}
+        author: {type: ["string", "null"]}
+        createdAt: {type: string}
+        updatedAt: {type: string}
+
+    BlogPostInput:
+      type: object
+      required: [title, slug, content, excerpt, category]
+      properties:
+        title: {type: string}
+        slug: {type: string}
+        content: {type: string}
+        excerpt: {type: string}
+        coverImageUrl: {type: ["string", "null"]}
+        published: {type: boolean}
+        category: {type: string}
+        author: {type: ["string", "null"]}
+
+    BlogPostUpdate:
+      type: object
+      properties:
+        title: {type: string}
+        slug: {type: string}
+        content: {type: string}
+        excerpt: {type: string}
+        coverImageUrl: {type: ["string", "null"]}
+        published: {type: boolean}
+        category: {type: string}
+        author: {type: ["string", "null"]}
+
+    SiteSetting:
+      type: object
+      required: [id, key, value, label, group, updatedAt]
+      properties:
+        id: {type: integer}
+        key: {type: string}
+        value: {type: string}
+        label: {type: string}
+        group: {type: string}
+        updatedAt: {type: string}
+
+    SiteSettingInput:
+      type: object
+      required: [value, label, group]
+      properties:
+        value: {type: string}
+        label: {type: string}
+        group: {type: string}
+
+    AffiliateProgram:
+      type: object
+      required: [id, name, slug, baseUrl, affiliateId, active, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        slug: {type: string}
+        baseUrl: {type: string}
+        affiliateId: {type: string}
+        description: {type: ["string", "null"]}
+        logoUrl: {type: ["string", "null"]}
+        commissionRate: {type: ["number", "null"]}
+        active: {type: boolean}
+        totalClicks: {type: integer}
+        createdAt: {type: string}
+
+    AffiliateProgramInput:
+      type: object
+      required: [name, slug, baseUrl, affiliateId]
+      properties:
+        name: {type: string}
+        slug: {type: string}
+        baseUrl: {type: string}
+        affiliateId: {type: string}
+        description: {type: ["string", "null"]}
+        logoUrl: {type: ["string", "null"]}
+        commissionRate: {type: ["number", "null"]}
+        active: {type: boolean}
+
+    AffiliateProgramUpdate:
+      type: object
+      properties:
+        name: {type: string}
+        baseUrl: {type: string}
+        affiliateId: {type: string}
+        description: {type: ["string", "null"]}
+        logoUrl: {type: ["string", "null"]}
+        commissionRate: {type: ["number", "null"]}
+        active: {type: boolean}
+
+    AffiliateLink:
+      type: object
+      required: [id, programId, title, affiliateUrl, category, active, clicks, createdAt]
+      properties:
+        id: {type: integer}
+        programId: {type: integer}
+        programName: {type: string}
+        programSlug: {type: string}
+        title: {type: string}
+        description: {type: ["string", "null"]}
+        affiliateUrl: {type: string}
+        imageUrl: {type: ["string", "null"]}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        originalPrice: {type: ["number", "null"]}
+        currency: {type: string}
+        featured: {type: boolean}
+        active: {type: boolean}
+        clicks: {type: integer}
+        createdAt: {type: string}
+
+    AffiliateLinkInput:
+      type: object
+      required: [programId, title, affiliateUrl, category]
+      properties:
+        programId: {type: integer}
+        title: {type: string}
+        description: {type: ["string", "null"]}
+        affiliateUrl: {type: string}
+        imageUrl: {type: ["string", "null"]}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        originalPrice: {type: ["number", "null"]}
+        currency: {type: string}
+        featured: {type: boolean}
+        active: {type: boolean}
+
+    AffiliateLinkUpdate:
+      type: object
+      properties:
+        title: {type: string}
+        description: {type: ["string", "null"]}
+        affiliateUrl: {type: string}
+        imageUrl: {type: ["string", "null"]}
+        category: {type: string}
+        price: {type: ["number", "null"]}
+        originalPrice: {type: ["number", "null"]}
+        currency: {type: string}
+        featured: {type: boolean}
+        active: {type: boolean}
+        programId: {type: integer}
+
+    ClickTrackResponse:
+      type: object
+      required: [redirectUrl, clicks]
+      properties:
+        redirectUrl: {type: string}
+        clicks: {type: integer}
+
+    WebsiteTemplate:
+      type: object
+      required: [id, name, description, category, price, active, featured, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        previewUrl: {type: ["string", "null"]}
+        screenshotUrl: {type: ["string", "null"]}
+        features: {type: string}
+        techStack: {type: ["string", "null"]}
+        deliveryDays: {type: integer}
+        active: {type: boolean}
+        featured: {type: boolean}
+        createdAt: {type: string}
+
+    WebsiteTemplateInput:
+      type: object
+      required: [name, description, category, price]
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        previewUrl: {type: ["string", "null"]}
+        screenshotUrl: {type: ["string", "null"]}
+        features: {type: string}
+        techStack: {type: ["string", "null"]}
+        deliveryDays: {type: integer}
+        active: {type: boolean}
+        featured: {type: boolean}
+
+    WebsiteTemplateUpdate:
+      type: object
+      properties:
+        name: {type: string}
+        description: {type: string}
+        category: {type: string}
+        price: {type: number}
+        previewUrl: {type: ["string", "null"]}
+        screenshotUrl: {type: ["string", "null"]}
+        features: {type: string}
+        techStack: {type: ["string", "null"]}
+        deliveryDays: {type: integer}
+        active: {type: boolean}
+        featured: {type: boolean}

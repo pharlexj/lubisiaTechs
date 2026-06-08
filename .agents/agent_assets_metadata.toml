@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "7o9gYr-FG50QeaNMIsfIM"
+uri = "file://artifacts/lubisiateks/public/images/hero.png"
+type = "image"
+title = "modern IT shop interior"
+
+[[generated]]
+id = "QuaoOI1OpipeOfwpFJS2h"
+uri = "file://artifacts/lubisiateks/public/images/keyboard.png"
+type = "image"
+title = "mechanical keyboard product photo"
+
+[[generated]]
+id = "treNJ4kh6uJzPB5WI5Nd2"
+uri = "file://artifacts/lubisiateks/public/images/mouse.png"
+type = "image"
+title = "wireless mouse product photo"
+
+[[generated]]
+id = "XLS67KJ5AB2fv1cMepk6G"
+uri = "file://artifacts/lubisiateks/public/images/stand.png"
+type = "image"
+title = "aluminum laptop stand"
+
+[[generated]]
+id = "xwVk2PFjAl3yWUvVdvio7"
+uri = "file://artifacts/lubisiateks/public/images/hub.png"
+type = "image"
+title = "usb-c hub product photo"
