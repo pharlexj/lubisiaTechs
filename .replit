@@ -5,15 +5,11 @@ router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
-args = ["pnpm", "store", "prune"]
+args = ["npm", "install", "--frozen-lockfile"]
 env = { "CI" = "true" }
 
 [workflows]
 runButton = "Project"
-
-[agent]
-stack = "PNPM_WORKSPACE"
-expertMode = true
 
 [postMerge]
 path = "scripts/post-merge.sh"
