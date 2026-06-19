@@ -2,26 +2,21 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
-  "workspaces": [
-    "artifacts/*",
-    "lib/*",
-    "scripts"
-  ],
   "scripts": {
-    "build": "npm run typecheck && npm run build --workspaces --if-present",
-    "db:migraton": "cd lib/db && node ../../node_modules/drizzle-kit/bin.cjs push --config ./drizzle.config.ts",
-    "kill:3000": "npx kill-port@latest 3000 || exit 0",
-    "start:db": "npm run start --workspace @workspace/db",
-    "start:api": "npm run build --workspace @workspace/api-server && npm run start --workspace @workspace/api-server",
-    "start": "npm run kill:3000 && npm run start:db && npm run start:api",
-    "typecheck:libs": "tsc --build",
-    "typecheck": "npm run typecheck:libs && npm run typecheck --workspace artifacts/* --workspace scripts --if-present"
-  },
+  "preinstall": "node ./scripts/preinstall.cjs",
+  "build": "pnpm run typecheck && pnpm -r --if-present run build",
+  "typecheck:libs": "tsc --build",
+  "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+},
   "private": true,
   "devDependencies": {
     "prettier": "^3.8.3",
-    "typescript": "~5.9.3",
-    "@types/node": "^20.19.0"
-    
+    "typescript": "~5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "19.1.0",
+      "react-dom": "19.1.0"
+    }
   }
 }

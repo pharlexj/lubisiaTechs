@@ -18,6 +18,10 @@ tags:
   - name: auth
   - name: newsletter
   - name: websiteTemplates
+  - name: mpesa
+  - name: about
+  - name: team
+  - name: Storage
 
 paths:
   /healthz:
@@ -773,6 +777,236 @@ paths:
         "204":
           description: Deleted
 
+  # ── M-Pesa ────────────────────────────────────────────────────────────────
+  /mpesa/stk-push:
+    post:
+      operationId: mpesaStkPush
+      tags: [mpesa]
+      summary: Initiate M-Pesa STK push payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MpesaPaymentRequest"
+      responses:
+        "200":
+          description: STK push initiated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MpesaPaymentResult"
+        "400":
+          description: Bad request
+        "503":
+          description: M-Pesa not configured
+
+  /mpesa/status:
+    get:
+      operationId: getMpesaStatus
+      tags: [mpesa]
+      summary: Check if M-Pesa is configured
+      responses:
+        "200":
+          description: Configuration status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MpesaConfigStatus"
+
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadUrlRequest'
+      responses:
+        '200':
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadUrlResponse'
+        '400':
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Object content streamed.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an uploaded object entity
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Object content streamed.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /about:
+    get:
+      operationId: listAboutSections
+      tags: [about]
+      summary: Get all About Us sections
+      responses:
+        "200":
+          description: List of sections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AboutSection"
+
+  /about/{key}:
+    put:
+      operationId: upsertAboutSection
+      tags: [about]
+      summary: Create or update an About Us section
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AboutSectionBody"
+      responses:
+        "200":
+          description: Updated section
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AboutSection"
+
+  /team:
+    get:
+      operationId: listTeamMembers
+      tags: [team]
+      summary: Get all team members
+      responses:
+        "200":
+          description: List of team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamMember"
+    post:
+      operationId: createTeamMember
+      tags: [team]
+      summary: Add a team member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamMemberBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamMember"
+
+  /team/{id}:
+    put:
+      operationId: updateTeamMember
+      tags: [team]
+      summary: Update a team member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamMemberBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamMember"
+    delete:
+      operationId: deleteTeamMember
+      tags: [team]
+      summary: Delete a team member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -1206,3 +1440,99 @@ components:
         deliveryDays: {type: integer}
         active: {type: boolean}
         featured: {type: boolean}
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        contentType:
+          type: string
+
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    AboutSection:
+      type: object
+      required: [id, key, title, content, displayOrder, updatedAt]
+      properties:
+        id: {type: integer}
+        key: {type: string}
+        title: {type: string}
+        content: {type: string}
+        displayOrder: {type: integer}
+        updatedAt: {type: string}
+
+    AboutSectionBody:
+      type: object
+      required: [title, content]
+      properties:
+        title: {type: string}
+        content: {type: string}
+        displayOrder: {type: integer}
+
+    TeamMember:
+      type: object
+      required: [id, name, role, bio, displayOrder, active, createdAt]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        role: {type: string}
+        bio: {type: string}
+        photoUrl: {type: ["string", "null"]}
+        linkedIn: {type: ["string", "null"]}
+        displayOrder: {type: integer}
+        active: {type: integer}
+        createdAt: {type: string}
+
+    TeamMemberBody:
+      type: object
+      required: [name, role]
+      properties:
+        name: {type: string}
+        role: {type: string}
+        bio: {type: string}
+        photoUrl: {type: ["string", "null"]}
+        linkedIn: {type: ["string", "null"]}
+        displayOrder: {type: integer}
+        active: {type: integer}
+
+    MpesaPaymentRequest:
+      type: object
+      required: [phone, amount]
+      properties:
+        phone: {type: string}
+        amount: {type: number}
+        orderId: {type: integer}
+        reference: {type: string}
+
+    MpesaPaymentResult:
+      type: object
+      required: [message]
+      properties:
+        checkoutRequestId: {type: string}
+        merchantRequestId: {type: string}
+        message: {type: string}
+
+    MpesaConfigStatus:
+      type: object
+      required: [configured, environment]
+      properties:
+        configured: {type: boolean}
+        environment: {type: string}

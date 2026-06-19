@@ -7,3 +7,4 @@ export * from "./settings";
 export * from "./affiliate";
 export * from "./users";
 export * from "./website-templates";
+export * from "./about";

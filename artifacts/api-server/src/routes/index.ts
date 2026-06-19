@@ -11,6 +11,9 @@ import affiliateRouter from "./affiliate";
 import authRouter from "./auth";
 import newsletterRouter from "./newsletter";
 import websiteTemplatesRouter from "./website-templates";
+import mpesaRouter from "./mpesa";
+import aboutRouter from "./about";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -26,5 +29,8 @@ router.use(blogRouter);
 router.use(settingsRouter);
 router.use(affiliateRouter);
 router.use(websiteTemplatesRouter);
+router.use(mpesaRouter);
+router.use(aboutRouter);
+router.use(storageRouter);
 
 export default router;

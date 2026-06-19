@@ -20,9 +20,7 @@
     "alwaysStrict": true,
     "skipLibCheck": true,
     "target": "es2022",
-    "types": ["node"],
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "types": [],
     "customConditions": ["workspace"]
   }
 }

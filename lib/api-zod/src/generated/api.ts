@@ -805,3 +805,166 @@ export const DeleteWebsiteTemplateParams = zod.object({
 })
 
 
+/**
+ * @summary Initiate M-Pesa STK push payment
+ */
+export const MpesaStkPushBody = zod.object({
+  "phone": zod.string(),
+  "amount": zod.number(),
+  "orderId": zod.number().optional(),
+  "reference": zod.string().optional()
+})
+
+export const MpesaStkPushResponse = zod.object({
+  "checkoutRequestId": zod.string().optional(),
+  "merchantRequestId": zod.string().optional(),
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Check if M-Pesa is configured
+ */
+export const GetMpesaStatusResponse = zod.object({
+  "configured": zod.boolean(),
+  "environment": zod.string()
+})
+
+
+/**
+ * @summary Request a presigned URL for file upload
+ */
+export const RequestUploadUrlBody = zod.object({
+  "name": zod.string(),
+  "size": zod.number(),
+  "contentType": zod.string()
+})
+
+export const RequestUploadUrlResponse = zod.object({
+  "uploadURL": zod.string(),
+  "objectPath": zod.string()
+})
+
+
+/**
+ * @summary Serve a public asset
+ */
+export const GetPublicObjectParams = zod.object({
+  "filePath": zod.coerce.string()
+})
+
+
+/**
+ * @summary Serve an uploaded object entity
+ */
+export const GetStorageObjectParams = zod.object({
+  "objectPath": zod.coerce.string()
+})
+
+
+/**
+ * @summary Get all About Us sections
+ */
+export const ListAboutSectionsResponseItem = zod.object({
+  "id": zod.number(),
+  "key": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "displayOrder": zod.number(),
+  "updatedAt": zod.string()
+})
+export const ListAboutSectionsResponse = zod.array(ListAboutSectionsResponseItem)
+
+
+/**
+ * @summary Create or update an About Us section
+ */
+export const UpsertAboutSectionParams = zod.object({
+  "key": zod.coerce.string()
+})
+
+export const UpsertAboutSectionBody = zod.object({
+  "title": zod.string(),
+  "content": zod.string(),
+  "displayOrder": zod.number().optional()
+})
+
+export const UpsertAboutSectionResponse = zod.object({
+  "id": zod.number(),
+  "key": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "displayOrder": zod.number(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Get all team members
+ */
+export const ListTeamMembersResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "bio": zod.string(),
+  "photoUrl": zod.string().nullish(),
+  "linkedIn": zod.string().nullish(),
+  "displayOrder": zod.number(),
+  "active": zod.number(),
+  "createdAt": zod.string()
+})
+export const ListTeamMembersResponse = zod.array(ListTeamMembersResponseItem)
+
+
+/**
+ * @summary Add a team member
+ */
+export const CreateTeamMemberBody = zod.object({
+  "name": zod.string(),
+  "role": zod.string(),
+  "bio": zod.string().optional(),
+  "photoUrl": zod.string().nullish(),
+  "linkedIn": zod.string().nullish(),
+  "displayOrder": zod.number().optional(),
+  "active": zod.number().optional()
+})
+
+
+/**
+ * @summary Update a team member
+ */
+export const UpdateTeamMemberParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateTeamMemberBody = zod.object({
+  "name": zod.string(),
+  "role": zod.string(),
+  "bio": zod.string().optional(),
+  "photoUrl": zod.string().nullish(),
+  "linkedIn": zod.string().nullish(),
+  "displayOrder": zod.number().optional(),
+  "active": zod.number().optional()
+})
+
+export const UpdateTeamMemberResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "bio": zod.string(),
+  "photoUrl": zod.string().nullish(),
+  "linkedIn": zod.string().nullish(),
+  "displayOrder": zod.number(),
+  "active": zod.number(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a team member
+ */
+export const DeleteTeamMemberParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+

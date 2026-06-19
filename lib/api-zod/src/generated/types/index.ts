@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './aboutSection';
+export * from './aboutSectionBody';
 export * from './affiliateLink';
 export * from './affiliateLinkInput';
 export * from './affiliateLinkUpdate';
@@ -17,6 +19,7 @@ export * from './blogPost';
 export * from './blogPostInput';
 export * from './blogPostUpdate';
 export * from './clickTrackResponse';
+export * from './errorEnvelope';
 export * from './healthStatus';
 export * from './inquiry';
 export * from './inquiryInput';
@@ -27,6 +30,9 @@ export * from './listOrdersParams';
 export * from './listProductsParams';
 export * from './listWebsiteTemplatesParams';
 export * from './loginInput';
+export * from './mpesaConfigStatus';
+export * from './mpesaPaymentRequest';
+export * from './mpesaPaymentResult';
 export * from './newsletterSubscribeInput';
 export * from './newsletterSubscriber';
 export * from './order';
@@ -43,7 +49,11 @@ export * from './serviceUpdate';
 export * from './siteSetting';
 export * from './siteSettingInput';
 export * from './summaryStats';
+export * from './teamMember';
+export * from './teamMemberBody';
 export * from './trackOrderParams';
+export * from './uploadUrlRequest';
+export * from './uploadUrlResponse';
 export * from './userProfile';
 export * from './websiteTemplate';
 export * from './websiteTemplateInput';

@@ -6,9 +6,7 @@
     "emitDeclarationOnly": true,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["node"],
-    "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "types": ["node"]
   },
   "include": ["src"]
 }

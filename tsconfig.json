@@ -1,10 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
-  "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
-    "strict": true
-  },
   "files": [],
   "references": [
     {
@@ -15,6 +11,9 @@
     },
     {
       "path": "./lib/api-zod"
+    },
+    {
+      "path": "./lib/object-storage-web"
     }
   ]
 }
