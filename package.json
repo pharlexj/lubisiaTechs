@@ -5,12 +5,14 @@
   "scripts": {
     "preinstall": "node ./scripts/preinstall.cjs",
     "start": "pnpm --filter \"./artifacts/api-server\" run start",
+    "migrate": "cd lib/db && pnpm exec dotenv -e ../../.env -- pnpm exec drizzle-kit push --config ./drizzle.config.ts",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
 },
   "private": true,
   "devDependencies": {
+    "dotenv-cli": "^6.0.0",
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"
   }
