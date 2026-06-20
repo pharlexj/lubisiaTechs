@@ -23,20 +23,20 @@ router.post("/newsletter/subscribe", async (req, res) => {
       name: body.name ?? null,
     }).returning();
     sendNewsletterWelcome(sub.email, sub.name ?? undefined).catch(() => {});
-    res.status(201).json(subToJson(sub));
+    return res.status(201).json(subToJson(sub));
   } catch (err) {
     req.log.error({ err }, "Failed to subscribe to newsletter");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
 router.get("/newsletter/subscribers", async (req, res) => {
   try {
     const subs = await db.select().from(newsletterSubscribersTable).orderBy(newsletterSubscribersTable.subscribedAt);
-    res.json(subs.map(subToJson));
+    return res.json(subs.map(subToJson));
   } catch (err) {
     req.log.error({ err }, "Failed to list newsletter subscribers");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

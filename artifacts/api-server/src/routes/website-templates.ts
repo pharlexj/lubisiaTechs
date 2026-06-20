@@ -32,10 +32,10 @@ router.get("/website-templates", async (req, res) => {
       .from(websiteTemplatesTable)
       .where(and(...conditions))
       .orderBy(websiteTemplatesTable.createdAt);
-    res.json(templates.map(templateToJson));
+    return res.json(templates.map(templateToJson));
   } catch (err) {
     req.log.error({ err }, "Failed to list website templates");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -55,10 +55,10 @@ router.post("/website-templates", async (req, res) => {
       active: body.active ?? true,
       featured: body.featured ?? false,
     }).returning();
-    res.status(201).json(templateToJson(template));
+    return res.status(201).json(templateToJson(template));
   } catch (err) {
     req.log.error({ err }, "Failed to create website template");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -67,10 +67,10 @@ router.get("/website-templates/:id", async (req, res) => {
     const { id } = GetWebsiteTemplateParams.parse({ id: Number(req.params.id) });
     const [template] = await db.select().from(websiteTemplatesTable).where(eq(websiteTemplatesTable.id, id));
     if (!template) return res.status(404).json({ error: "Not found" });
-    res.json(templateToJson(template));
+    return res.json(templateToJson(template));
   } catch (err) {
     req.log.error({ err }, "Failed to get website template");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -92,10 +92,10 @@ router.patch("/website-templates/:id", async (req, res) => {
     if (body.featured !== undefined) updateData.featured = body.featured;
     const [template] = await db.update(websiteTemplatesTable).set(updateData).where(eq(websiteTemplatesTable.id, id)).returning();
     if (!template) return res.status(404).json({ error: "Not found" });
-    res.json(templateToJson(template));
+    return res.json(templateToJson(template));
   } catch (err) {
     req.log.error({ err }, "Failed to update website template");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -103,10 +103,10 @@ router.delete("/website-templates/:id", async (req, res) => {
   try {
     const { id } = DeleteWebsiteTemplateParams.parse({ id: Number(req.params.id) });
     await db.delete(websiteTemplatesTable).where(eq(websiteTemplatesTable.id, id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete website template");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

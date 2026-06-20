@@ -56,10 +56,10 @@ router.get("/affiliate/programs", async (req, res) => {
     const result = await Promise.all(
       programs.map(async (p) => programToJson(p, await programTotalClicks(p.id)))
     );
-    res.json(ListAffiliateProgramsResponse.parse(result));
+    return res.json(ListAffiliateProgramsResponse.parse(result));
   } catch (err) {
     req.log.error({ err }, "Failed to list affiliate programs");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -76,10 +76,10 @@ router.post("/affiliate/programs", async (req, res) => {
       commissionRate: body.commissionRate !== null && body.commissionRate !== undefined ? String(body.commissionRate) : null,
       active: body.active ?? true,
     }).returning();
-    res.status(201).json(programToJson(program, 0));
+    return res.status(201).json(programToJson(program, 0));
   } catch (err) {
     req.log.error({ err }, "Failed to create affiliate program");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -97,10 +97,10 @@ router.patch("/affiliate/programs/:id", async (req, res) => {
     if (body.active !== undefined) updateData.active = body.active;
     const [program] = await db.update(affiliateProgramsTable).set(updateData).where(eq(affiliateProgramsTable.id, id)).returning();
     if (!program) return res.status(404).json({ error: "Not found" });
-    res.json(programToJson(program, await programTotalClicks(id)));
+    return res.json(programToJson(program, await programTotalClicks(id)));
   } catch (err) {
     req.log.error({ err }, "Failed to update affiliate program");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -108,10 +108,10 @@ router.delete("/affiliate/programs/:id", async (req, res) => {
   try {
     const { id } = DeleteAffiliateProgramParams.parse({ id: Number(req.params.id) });
     await db.delete(affiliateProgramsTable).where(eq(affiliateProgramsTable.id, id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete affiliate program");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -130,10 +130,10 @@ router.get("/affiliate/links", async (req, res) => {
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(affiliateLinksTable.createdAt);
     const result = await Promise.all(links.map(linkWithProgram));
-    res.json(ListAffiliateLinksResponse.parse(result));
+    return res.json(ListAffiliateLinksResponse.parse(result));
   } catch (err) {
     req.log.error({ err }, "Failed to list affiliate links");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -153,10 +153,10 @@ router.post("/affiliate/links", async (req, res) => {
       featured: body.featured ?? false,
       active: body.active ?? true,
     }).returning();
-    res.status(201).json(await linkWithProgram(link));
+    return res.status(201).json(await linkWithProgram(link));
   } catch (err) {
     req.log.error({ err }, "Failed to create affiliate link");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -178,10 +178,10 @@ router.patch("/affiliate/links/:id", async (req, res) => {
     if (body.programId !== undefined) updateData.programId = body.programId;
     const [link] = await db.update(affiliateLinksTable).set(updateData).where(eq(affiliateLinksTable.id, id)).returning();
     if (!link) return res.status(404).json({ error: "Not found" });
-    res.json(await linkWithProgram(link));
+    return res.json(await linkWithProgram(link));
   } catch (err) {
     req.log.error({ err }, "Failed to update affiliate link");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -189,10 +189,10 @@ router.delete("/affiliate/links/:id", async (req, res) => {
   try {
     const { id } = DeleteAffiliateLinkParams.parse({ id: Number(req.params.id) });
     await db.delete(affiliateLinksTable).where(eq(affiliateLinksTable.id, id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete affiliate link");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -206,10 +206,10 @@ router.post("/affiliate/links/:id/click", async (req, res) => {
       .set({ clicks: link.clicks + 1 })
       .where(eq(affiliateLinksTable.id, id))
       .returning();
-    res.json({ redirectUrl: link.affiliateUrl, clicks: updated.clicks });
+    return res.json({ redirectUrl: link.affiliateUrl, clicks: updated.clicks });
   } catch (err) {
     req.log.error({ err }, "Failed to track click");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

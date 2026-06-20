@@ -23,10 +23,10 @@ router.get("/inquiries", async (req, res) => {
   try {
     const inquiries = await db.select().from(inquiriesTable).orderBy(inquiriesTable.createdAt);
     const parsed = ListInquiriesResponse.parse(inquiries.map(inquiryToJson));
-    res.json(parsed);
+    return res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "Failed to list inquiries");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -51,10 +51,10 @@ router.post("/inquiries", async (req, res) => {
       message: inquiry.message,
       serviceInterest: inquiry.serviceInterest,
     }).catch(() => {});
-    res.status(201).json(inquiryToJson(inquiry));
+    return res.status(201).json(inquiryToJson(inquiry));
   } catch (err) {
     req.log.error({ err }, "Failed to create inquiry");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -66,10 +66,10 @@ router.patch("/inquiries/:id", async (req, res) => {
     if (body.status !== undefined) updateData.status = body.status;
     const [inquiry] = await db.update(inquiriesTable).set(updateData).where(eq(inquiriesTable.id, id)).returning();
     if (!inquiry) return res.status(404).json({ error: "Not found" });
-    res.json(inquiryToJson(inquiry));
+    return res.json(inquiryToJson(inquiry));
   } catch (err) {
     req.log.error({ err }, "Failed to update inquiry");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 

@@ -1,0 +1,8 @@
+{
+	"chat.tools.terminal.autoApprove": {
+		"/^if \\(Test-Path artifacts\\\\mockup-sandbox\\\\node_modules\\\\@tailwindcss\\) \\{ Get-ChildItem -LiteralPath artifacts\\\\mockup-sandbox\\\\node_modules\\\\@tailwindcss \\| Select Name, Mode, LinkType \\| Format-Table -AutoSize \\} else \\{ Write-Host 'mockup-sandbox @tailwindcss missing'; \\}$/": {
+			"approve": true,
+			"matchCommandLine": true
+		}
+	}
+}

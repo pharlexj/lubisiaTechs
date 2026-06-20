@@ -23,10 +23,10 @@ router.get("/services", async (req, res) => {
         createdAt: s.createdAt.toISOString(),
       }))
     );
-    res.json(parsed);
+    return res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "Failed to list services");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -41,14 +41,14 @@ router.post("/services", async (req, res) => {
       imageUrl: body.imageUrl ?? null,
       featured: body.featured ?? false,
     }).returning();
-    res.status(201).json({
+    return res.status(201).json({
       ...service,
       price: service.price !== null ? Number(service.price) : null,
       createdAt: service.createdAt.toISOString(),
     });
   } catch (err) {
     req.log.error({ err }, "Failed to create service");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -57,14 +57,14 @@ router.get("/services/:id", async (req, res) => {
     const { id } = GetServiceParams.parse({ id: Number(req.params.id) });
     const [service] = await db.select().from(servicesTable).where(eq(servicesTable.id, id));
     if (!service) return res.status(404).json({ error: "Not found" });
-    res.json({
+    return res.json({
       ...service,
       price: service.price !== null ? Number(service.price) : null,
       createdAt: service.createdAt.toISOString(),
     });
   } catch (err) {
     req.log.error({ err }, "Failed to get service");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -81,14 +81,14 @@ router.patch("/services/:id", async (req, res) => {
     if (body.featured !== undefined) updateData.featured = body.featured;
     const [service] = await db.update(servicesTable).set(updateData).where(eq(servicesTable.id, id)).returning();
     if (!service) return res.status(404).json({ error: "Not found" });
-    res.json({
+    return res.json({
       ...service,
       price: service.price !== null ? Number(service.price) : null,
       createdAt: service.createdAt.toISOString(),
     });
   } catch (err) {
     req.log.error({ err }, "Failed to update service");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -96,10 +96,10 @@ router.delete("/services/:id", async (req, res) => {
   try {
     const { id } = DeleteServiceParams.parse({ id: Number(req.params.id) });
     await db.delete(servicesTable).where(eq(servicesTable.id, id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete service");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

@@ -34,10 +34,10 @@ router.get("/blog", async (req, res) => {
       .from(blogPostsTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(blogPostsTable.createdAt);
-    res.json(ListBlogPostsResponse.parse(posts.map(postToJson)));
+    return res.json(ListBlogPostsResponse.parse(posts.map(postToJson)));
   } catch (err) {
     req.log.error({ err }, "Failed to list blog posts");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -54,10 +54,10 @@ router.post("/blog", async (req, res) => {
       category: body.category,
       author: body.author ?? null,
     }).returning();
-    res.status(201).json(postToJson(post));
+    return res.status(201).json(postToJson(post));
   } catch (err) {
     req.log.error({ err }, "Failed to create blog post");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -66,10 +66,10 @@ router.get("/blog/:slug", async (req, res) => {
     const { slug } = GetBlogPostParams.parse({ slug: req.params.slug });
     const [post] = await db.select().from(blogPostsTable).where(eq(blogPostsTable.slug, slug));
     if (!post) return res.status(404).json({ error: "Not found" });
-    res.json(GetBlogPostResponse.parse(postToJson(post)));
+    return res.json(GetBlogPostResponse.parse(postToJson(post)));
   } catch (err) {
     req.log.error({ err }, "Failed to get blog post");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -88,10 +88,10 @@ router.patch("/blog/:slug", async (req, res) => {
     if (body.author !== undefined) updateData.author = body.author;
     const [post] = await db.update(blogPostsTable).set(updateData).where(eq(blogPostsTable.slug, slug)).returning();
     if (!post) return res.status(404).json({ error: "Not found" });
-    res.json(postToJson(post));
+    return res.json(postToJson(post));
   } catch (err) {
     req.log.error({ err }, "Failed to update blog post");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -99,10 +99,10 @@ router.delete("/blog/:slug", async (req, res) => {
   try {
     const { slug } = DeleteBlogPostParams.parse({ slug: req.params.slug });
     await db.delete(blogPostsTable).where(eq(blogPostsTable.slug, slug));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete blog post");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

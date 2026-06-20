@@ -19,10 +19,10 @@ function settingToJson(s: typeof siteSettingsTable.$inferSelect) {
 router.get("/settings", async (req, res) => {
   try {
     const settings = await db.select().from(siteSettingsTable).orderBy(siteSettingsTable.group);
-    res.json(ListSettingsResponse.parse(settings.map(settingToJson)));
+    return res.json(ListSettingsResponse.parse(settings.map(settingToJson)));
   } catch (err) {
     req.log.error({ err }, "Failed to list settings");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -31,10 +31,10 @@ router.get("/settings/:key", async (req, res) => {
     const { key } = GetSettingParams.parse({ key: req.params.key });
     const [setting] = await db.select().from(siteSettingsTable).where(eq(siteSettingsTable.key, key));
     if (!setting) return res.status(404).json({ error: "Not found" });
-    res.json(GetSettingResponse.parse(settingToJson(setting)));
+    return res.json(GetSettingResponse.parse(settingToJson(setting)));
   } catch (err) {
     req.log.error({ err }, "Failed to get setting");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -56,10 +56,10 @@ router.put("/settings/:key", async (req, res) => {
         .values({ key, value: body.value, label: body.label, group: body.group })
         .returning();
     }
-    res.json(settingToJson(setting));
+    return res.json(settingToJson(setting));
   } catch (err) {
     req.log.error({ err }, "Failed to upsert setting");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 

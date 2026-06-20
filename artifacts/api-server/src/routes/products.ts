@@ -27,10 +27,10 @@ router.get("/products/featured", async (req, res) => {
   try {
     const products = await db.select().from(productsTable).where(eq(productsTable.featured, true)).limit(6);
     const parsed = GetFeaturedProductsResponse.parse(products.map(productToJson));
-    res.json(parsed);
+    return res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "Failed to get featured products");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -48,10 +48,10 @@ router.get("/products", async (req, res) => {
       .orderBy(productsTable.createdAt);
 
     const parsed = ListProductsResponse.parse(products.map(productToJson));
-    res.json(parsed);
+    return res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "Failed to list products");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -67,10 +67,10 @@ router.post("/products", async (req, res) => {
       imageUrl: body.imageUrl ?? null,
       featured: body.featured ?? false,
     }).returning();
-    res.status(201).json(productToJson(product));
+    return res.status(201).json(productToJson(product));
   } catch (err) {
     req.log.error({ err }, "Failed to create product");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -79,10 +79,10 @@ router.get("/products/:id", async (req, res) => {
     const { id } = GetProductParams.parse({ id: Number(req.params.id) });
     const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id));
     if (!product) return res.status(404).json({ error: "Not found" });
-    res.json(productToJson(product));
+    return res.json(productToJson(product));
   } catch (err) {
     req.log.error({ err }, "Failed to get product");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -100,10 +100,10 @@ router.patch("/products/:id", async (req, res) => {
     if (body.featured !== undefined) updateData.featured = body.featured;
     const [product] = await db.update(productsTable).set(updateData).where(eq(productsTable.id, id)).returning();
     if (!product) return res.status(404).json({ error: "Not found" });
-    res.json(productToJson(product));
+    return res.json(productToJson(product));
   } catch (err) {
     req.log.error({ err }, "Failed to update product");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -111,10 +111,10 @@ router.delete("/products/:id", async (req, res) => {
   try {
     const { id } = DeleteProductParams.parse({ id: Number(req.params.id) });
     await db.delete(productsTable).where(eq(productsTable.id, id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete product");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

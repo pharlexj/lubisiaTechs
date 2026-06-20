@@ -44,10 +44,10 @@ router.get("/orders/track", async (req, res) => {
       .where(and(eq(ordersTable.id, orderId), eq(ordersTable.customerEmail, email.toLowerCase())));
     if (!order) return res.status(404).json({ error: "Order not found" });
     const full = await getOrderWithItems(order.id);
-    res.json(full);
+    return res.json(full);
   } catch (err) {
     req.log.error({ err }, "Failed to track order");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -60,10 +60,10 @@ router.get("/orders", async (req, res) => {
     }
     const result = await Promise.all(allOrders.map((o) => getOrderWithItems(o.id)));
     const parsed = ListOrdersResponse.parse(result.filter(Boolean));
-    res.json(parsed);
+    return res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "Failed to list orders");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -110,10 +110,10 @@ router.post("/orders", async (req, res) => {
       totalAmount,
     }).catch(() => {});
 
-    res.status(201).json(full);
+    return res.status(201).json(full);
   } catch (err) {
     req.log.error({ err }, "Failed to create order");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
@@ -122,10 +122,10 @@ router.get("/orders/:id", async (req, res) => {
     const { id } = GetOrderParams.parse({ id: Number(req.params.id) });
     const order = await getOrderWithItems(id);
     if (!order) return res.status(404).json({ error: "Not found" });
-    res.json(order);
+    return res.json(order);
   } catch (err) {
     req.log.error({ err }, "Failed to get order");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -139,10 +139,10 @@ router.patch("/orders/:id", async (req, res) => {
     const [updated] = await db.update(ordersTable).set(updateData).where(eq(ordersTable.id, id)).returning();
     if (!updated) return res.status(404).json({ error: "Not found" });
     const full = await getOrderWithItems(id);
-    res.json(full);
+    return res.json(full);
   } catch (err) {
     req.log.error({ err }, "Failed to update order");
-    res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({ error: "Bad request" });
   }
 });
 
