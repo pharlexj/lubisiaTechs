@@ -400,7 +400,8 @@ export function Checkout() {
 											<h4 className="text-sm font-medium line-clamp-2 leading-tight pr-4">
 												{item.product.name}
 											</h4>
-											<button
+											<button 
+												title="Remove item"
 												onClick={() => removeItem(item.product.id)}
 												className="text-muted-foreground hover:text-destructive transition-colors"
 											>
